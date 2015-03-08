@@ -1,9 +1,11 @@
 var fs = require('fs');
 var path = require('path');
 var Models = require('../models');
+var stats = require('../helpers/stats');
 
 var viewModel = {
 	image: {},
+	sidebar: {},
 	likes: {},
 	comments: {}
 };
@@ -22,7 +24,12 @@ module.exports = {
 					viewModel.image = image;
 					//save the updated model
 					image.save();
-					res.render('image',viewModel);
+					Models.Comment.find({ uniqueID: image.filename }, function (err, comment) {
+						viewModel.comments = comment;
+					});
+					stats(viewModel, function(viewModel) {
+						res.render('image',viewModel);
+					});
 				} else {
 					//if no image, return to index
 					res.redirect('/');
