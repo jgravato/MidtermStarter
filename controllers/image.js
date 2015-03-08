@@ -1,14 +1,16 @@
 var fs = require('fs');
 var path = require('path');
 var Models = require('../models');
-//handles all requests for our image app
+
+var viewModel = {
+	image: {},
+	likes: {},
+	comments: {}
+};
+
 module.exports = {
 	index: function(req, res) {
-		var viewModel = {
-			image: {},
-			// likes: {},
-			// comments: {}
-		};
+		
 		//find the image using the url 
 		Models.Image.findOne({ filename: { $regex: req.params.image_id } },
 			function (err, image) {
@@ -106,32 +108,32 @@ module.exports = {
         			if (newComment.comment == "") {
             			console.log("No comment left...");
         			} else {
-            			if (newComment.name == ""){
-                			newComment.name = "Anonymous";
-                			newComment.save(function (err, Comment) {
-                    			console.log('Successfully inserted comment: by ' + req.body.name);
-                    			if (err){
-                    				throw err;
-                    			} else {
-                    				Models.Comment.find({ uniqueID: image.filename }, function (err, comment){
-                    					viewModel.comments = comment;
-                    					res.render('image',viewModel);
-                    				});
-                    			}
-                			});
-            			} else {
-                			newComment.save(function (err, Comment) {
-                    			console.log('Successfully inserted comment: by ' + req.body.name);
-                    			if (err){
-                    				throw err;
-                    			} else {
-                    				Models.Comment.find({ uniqueID: image.filename }, function (err, comment){
-                    					viewModel.comments = comment;
-                    					res.render('image',viewModel);
-                    				});
-                    			}
-                			});
-            			}
+                        if (newComment.name == ""){
+                            newComment.name = "Anonymous";
+                            newComment.save(function (err, Comment) {
+                                console.log('Successfully inserted comment: by ' + req.body.name);
+                                if (err){
+                                    throw err;
+                                } else {
+                                    Models.Comment.find({ uniqueID: image.filename }, function (err, comment){
+                                        viewModel.comments = comment;
+                                        res.render('image',viewModel);
+                                    });
+                                }
+                            });
+                        } else {
+                            newComment.save(function (err, Comment) {
+                                console.log('Successfully inserted comment: by ' + req.body.name);
+                                if (err){
+                                    throw err;
+                                } else {
+                                    Models.Comment.find({ uniqueID: image.filename }, function (err, comment){
+                                        viewModel.comments = comment;
+                                        res.render('image',viewModel);
+                                    });
+                                }
+                            });
+                        }
         			}
 				} else {
 					res.redirect('/');

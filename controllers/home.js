@@ -1,5 +1,10 @@
 //takes the browser's request and lets us send back a page or other information
 var imageModel = require('../models').Image;
+var commentModel = require('../models').comment;
+
+var viewModel = {
+	images: {}
+};
 
 module.exports = {
 	index: function(req, res) {
