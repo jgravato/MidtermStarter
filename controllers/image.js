@@ -5,7 +5,9 @@ var Models = require('../models');
 module.exports = {
 	index: function(req, res) {
 		var viewModel = {
-			image: {}
+			image: {},
+			// likes: {},
+			// comments: {}
 		};
 		//find the image using the url 
 		Models.Image.findOne({ filename: { $regex: req.params.image_id } },
@@ -79,7 +81,7 @@ module.exports = {
 	},
 	like: function(req, res) {
 		Models.Image.findOne({ filename: { $regex: req.params.image_id } },
-			function(err, image) {
+			function (err, image) {
 				image.likes++;
 				console.log(image.likes);
 				image.save();
@@ -87,6 +89,53 @@ module.exports = {
 		});
 	},
 	comment: function(req, res) {
-		res.send('The image:comment POST controller');
+		Models.Image.findOne({ filename: { $regex: req.params.image_id } },
+			function (err, image) {
+				if (err) {
+					throw err;
+				}
+				if (image){
+					var newComment = new Models.Comment({
+            			name: req.body.name,
+            			email: req.body.email,
+            			comment: req.body.comment,
+            			timestamp: Date.now(),
+            			uniqueID: image.filename
+        			})
+
+        			if (newComment.comment == "") {
+            			console.log("No comment left...");
+        			} else {
+            			if (newComment.name == ""){
+                			newComment.name = "Anonymous";
+                			newComment.save(function (err, Comment) {
+                    			console.log('Successfully inserted comment: by ' + req.body.name);
+                    			if (err){
+                    				throw err;
+                    			} else {
+                    				Models.Comment.find({ uniqueID: image.filename }, function (err, comment){
+                    					viewModel.comments = comment;
+                    					res.render('image',viewModel);
+                    				});
+                    			}
+                			});
+            			} else {
+                			newComment.save(function (err, Comment) {
+                    			console.log('Successfully inserted comment: by ' + req.body.name);
+                    			if (err){
+                    				throw err;
+                    			} else {
+                    				Models.Comment.find({ uniqueID: image.filename }, function (err, comment){
+                    					viewModel.comments = comment;
+                    					res.render('image',viewModel);
+                    				});
+                    			}
+                			});
+            			}
+        			}
+				} else {
+					res.redirect('/');
+				}
+			});
 	}
 };
