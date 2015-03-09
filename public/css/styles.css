@@ -2,6 +2,9 @@ input, textarea { margin: 10px 0;}
 p {margin: 10px 0 0 0 !important;}
 body {background-color: #eee;}
 div.panel-body {padding: 0 !important;}
+div.stats-body {padding: 0 15px !important;}
+div.stats-sidebar {padding: 0px !important;}
+p.img-description {margin-left: 15px !important; margin-bottom: 15px !important;}
 /*ul{padding: 0 !important;}*/
 li {background: #fff; padding: 15px !important;}
 li:nth-child(even) {background: #f0f8ff;};
